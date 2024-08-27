@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 import pyodbc
 
 app = Flask(__name__)
+app.secret_key = 'chave_secreta'  
 
 conn_str = (
     "DRIVER={SQL Server};"
@@ -82,9 +83,18 @@ def adicionar_cliente():
     idade = request.form['idade']
     cep = request.form['cep']
     endereco = request.form['endereco']
-
+    
     conn = get_db_connection()
     cursor = conn.cursor()
+
+    cursor.execute("SELECT CPF FROM TB_CLIENTE WHERE CPF = ?", cpf)
+    cliente_existente = cursor.fetchone()
+
+    if cliente_existente:
+        flash('CPF já cadastrado!')
+        conn.close()
+        return redirect(url_for('home'))
+
     cursor.execute("INSERT INTO TB_CLIENTE (NOME, TELEFONE, EMAIL, GENERO, CPF, IDADE, CEP, ENDERECO) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                    (nome, telefone, email, genero, cpf, idade, cep, endereco))
     conn.commit()
@@ -115,12 +125,26 @@ def editar_cliente(id_cliente):
 
     conn = get_db_connection()
     cursor = conn.cursor()
+
+    # Verifica se o CPF já está cadastrado em outro cliente
+    cursor.execute("SELECT CPF FROM TB_CLIENTE WHERE CPF = ? AND ID <> ?", (cpf, id_cliente))
+    cliente_existente = cursor.fetchone()
+
+    if cliente_existente:
+        flash('CPF já cadastrado!')
+        conn.close()
+        return redirect(url_for('home'))
+
     cursor.execute("UPDATE TB_CLIENTE SET NOME = ?, TELEFONE = ?, EMAIL = ?, GENERO = ?, CPF = ?, IDADE = ?, CEP = ?, ENDERECO = ? WHERE ID = ?",
                    (nome, telefone, email, genero, cpf, idade, cep, endereco, id_cliente))
     conn.commit()
     conn.close()
 
+    # Adiciona uma mensagem flash para indicar que a atualização foi bem-sucedida
+    flash('Atualizado!')
+
     return redirect(url_for('home'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

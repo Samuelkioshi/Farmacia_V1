@@ -53,6 +53,15 @@
             background-color: #1976D2;
         }
     </style>
+    <script>
+        // Script para exibir pop-up de aviso
+        window.onload = function() {
+            const flashMessages = {{ get_flashed_messages(with_categories=True)|tojson|safe }};
+            flashMessages.forEach(message => {
+                alert(message[1]);  // Exibe apenas a mensagem
+            });
+        }
+    </script>
 </head>
 <body>
     <header>
@@ -71,7 +80,7 @@
                 <th>CPF</th>
                 <th>Idade</th>
                 <th>CEP</th>
-                <th>Endereco</th>
+                <th>Endereço</th>
                 <th>Ações</th>
             </tr>
             {% for cliente in clientes %}
@@ -115,7 +124,7 @@
             <input type="number" name="idade" placeholder="Idade" required>
             <input type="text" name="cep" placeholder="CEP" required>
             <input type="text" name="endereco" placeholder="Endereço" required>
-            <button type="submit">Adicionar</button>
+            <button type="submit">Adicionar Cliente</button>
         </form>
 
         <h2>Produtos</h2>
@@ -125,7 +134,7 @@
                 <th>Nome</th>
                 <th>Fabricante</th>
                 <th>Data de Validade</th>
-                <th>Estoque</th>
+                <th>Quantidade em Estoque</th>
                 <th>Valor</th>
                 <th>Ações</th>
             </tr>
@@ -142,8 +151,8 @@
                         <input type="text" name="nome" placeholder="Nome" value="{{ produto.NOME_PROD }}" required>
                         <input type="text" name="fabricante" placeholder="Fabricante" value="{{ produto.FABRICANTE }}" required>
                         <input type="date" name="dt_validade" placeholder="Data de Validade" value="{{ produto.DT_VALIDADE }}" required>
-                        <input type="number" name="qntd_estoque" placeholder="Estoque" value="{{ produto.QNTD_ESTOQUE }}" required>
-                        <input type="number" step="0.01" name="valor" placeholder="Valor" value="{{ produto.VALOR }}" required>
+                        <input type="number" name="qntd_estoque" placeholder="Quantidade" value="{{ produto.QNTD_ESTOQUE }}" required>
+                        <input type="text" name="valor" placeholder="Valor" value="{{ produto.VALOR }}" required>
                         <button type="submit">Editar</button>
                     </form>
                     <form action="/excluir_produto/{{ produto.ID_PROD }}" method="post" style="display:inline;">
@@ -159,15 +168,15 @@
             <input type="text" name="nome" placeholder="Nome" required>
             <input type="text" name="fabricante" placeholder="Fabricante" required>
             <input type="date" name="dt_validade" placeholder="Data de Validade" required>
-            <input type="number" name="qntd_estoque" placeholder="Estoque" required>
-            <input type="number" step="0.01" name="valor" placeholder="Valor" required>
-            <button type="submit">Adicionar</button>
+            <input type="number" name="qntd_estoque" placeholder="Quantidade" required>
+            <input type="text" name="valor" placeholder="Valor" required>
+            <button type="submit">Adicionar Produto</button>
         </form>
     </main>
 
     <footer>
-        <p>Telefone: (11) 1234-5678</p>
-        <p>Email: contato@impactasaude.com.br</p>
+        <p>&copy; 2024 Farmácia Impacta Saúde. Todos os direitos reservados.</p>
+        <p>Contato: contato@farmaciaimpactasaude.com.br | Telefone: (11) 1234-5678</p>
     </footer>
 </body>
 </html>
