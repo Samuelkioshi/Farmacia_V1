@@ -126,7 +126,6 @@ def editar_cliente(id_cliente):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Verifica se o CPF já está cadastrado em outro cliente
     cursor.execute("SELECT CPF FROM TB_CLIENTE WHERE CPF = ? AND ID <> ?", (cpf, id_cliente))
     cliente_existente = cursor.fetchone()
 
@@ -140,7 +139,6 @@ def editar_cliente(id_cliente):
     conn.commit()
     conn.close()
 
-    # Adiciona uma mensagem flash para indicar que a atualização foi bem-sucedida
     flash('Atualizado!')
 
     return redirect(url_for('home'))
