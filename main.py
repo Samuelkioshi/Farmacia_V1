@@ -20,7 +20,7 @@ def home():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT ID_PROD, NOME_PROD, FABRICANTE, DT_VALIDADE, QNTD_ESTOQUE, VALOR FROM TB_PRODUTOS")
+    cursor.execute("SELECT ID_PROD, NOME_PROD, FABRICANTE, DT_VALIDADE, QNTD_ESTOQUE, VALOR, SECAO FROM TB_PRODUTOS")
     produtos = cursor.fetchall()
 
     cursor.execute("SELECT ID, NOME, TELEFONE, EMAIL, GENERO, CPF, IDADE, CEP, ENDERECO FROM TB_CLIENTE")
@@ -36,11 +36,12 @@ def adicionar_produto():
     dt_validade = request.form['dt_validade']
     qntd_estoque = request.form['qntd_estoque']
     valor = request.form['valor']
+    secao = request.form['secao']
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO TB_PRODUTOS (NOME_PROD, FABRICANTE, DT_VALIDADE, QNTD_ESTOQUE, VALOR) VALUES (?, ?, ?, ?, ?)",
-                   (nome, fabricante, dt_validade, qntd_estoque, valor))
+    cursor.execute("INSERT INTO TB_PRODUTOS (NOME_PROD, FABRICANTE, DT_VALIDADE, QNTD_ESTOQUE, VALOR, SECAO) VALUES (?, ?, ?, ?, ?, ?)",
+                   (nome, fabricante, dt_validade, qntd_estoque, valor, secao))
     conn.commit()
     conn.close()
 
@@ -63,15 +64,27 @@ def editar_produto(id_prod):
     dt_validade = request.form['dt_validade']
     qntd_estoque = request.form['qntd_estoque']
     valor = request.form['valor']
+    secao = request.form['secao']
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("UPDATE TB_PRODUTOS SET NOME_PROD = ?, FABRICANTE = ?, DT_VALIDADE = ?, QNTD_ESTOQUE = ?, VALOR = ? WHERE ID_PROD = ?",
-                   (nome, fabricante, dt_validade, qntd_estoque, valor, id_prod))
+    cursor.execute("UPDATE TB_PRODUTOS SET NOME_PROD = ?, FABRICANTE = ?, DT_VALIDADE = ?, QNTD_ESTOQUE = ?, VALOR = ?, SECAO = ? WHERE ID_PROD = ?",
+                   (nome, fabricante, dt_validade, qntd_estoque, valor, secao, id_prod))
     conn.commit()
     conn.close()
 
     return redirect(url_for('home'))
+
+@app.route('/produto/<int:product_id>')
+def ver_produto(product_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT NOME_PROD, DESCRICAO, IMAGEM, SECAO FROM TB_PRODUTOS WHERE ID_PROD = ?", product_id)
+    produto = cursor.fetchone()
+
+    conn.close()
+    return render_template('produto.html', produto=produto)
 
 @app.route('/adicionar_cliente', methods=['POST'])
 def adicionar_cliente():
@@ -143,6 +156,14 @@ def editar_cliente(id_cliente):
 
     return redirect(url_for('home'))
 
+@app.route('/admin', methods=['POST'])
+def admin_access():
+    senha = request.form['senha']
+    if senha == '123456':
+        return render_template('admin.html')  # Renderiza uma página de administração
+    else:
+        flash('Senha incorreta!')
+        return redirect(url_for('home'))
 
 if __name__ == '__main__':
     app.run(debug=True)

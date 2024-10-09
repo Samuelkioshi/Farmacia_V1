@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Farmácia Impacta Saúde</title>
     <style>
-        /* Estilos simplificados */
+        /* Estilos globais */
         body {
             font-family: Arial, sans-serif;
             background-color: #f9f9f9;
-            color: #000;
+            color: #333;
         }
         header, footer {
             background-color: #2196F3;
@@ -17,49 +17,63 @@
             text-align: center;
             padding: 1em 0;
         }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 1em;
+            background-color: #f1f1f1;
+        }
+        nav a {
+            text-decoration: none;
+            color: #2196F3;
+            padding: 0.5em;
+        }
+        nav a:hover {
+            background-color: #ddd;
+            border-radius: 5px;
+        }
+        .menu {
+            display: flex;
+            justify-content: center;
+            background-color: #e0e0e0;
+            padding: 1em;
+        }
+        .menu a {
+            margin: 0 1em;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+        .menu a:hover {
+            color: #2196F3;
+        }
         main {
             padding: 1em;
-            margin-bottom: 3em;
         }
         h2 {
             color: #2196F3;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 1em;
+        /* Estilo da grade de produtos */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
         }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 0.5em;
-            text-align: left;
-        }
-        form {
-            margin-bottom: 1em;
-        }
-        input, button {
-            padding: 0.5em;
-            margin: 0.2em 0;
-        }
-        button {
-            background-color: #2196F3;
-            color: white;
-            border: none;
+        .product-card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+            transition: transform 0.2s;
             cursor: pointer;
         }
-        button:hover {
-            background-color: #1976D2;
+        .product-card:hover {
+            transform: scale(1.05);
         }
     </style>
     <script>
-        
-        window.onload = function() {
-            const flashMessages = {{ get_flashed_messages(with_categories=True)|tojson|safe }};
-            flashMessages.forEach(message => {
-                alert(message[1]);  
-            });
+        function showProductDescription(productId) {
+            window.location.href = "/produto/" + productId;
         }
     </script>
 </head>
@@ -68,111 +82,40 @@
         <h1>Farmácia Impacta Saúde</h1>
     </header>
 
+    <nav>
+        <div>
+            <a href="#">Minha Conta</a>
+            <a href="#">Carrinho de Compras</a>
+        </div>
+        <div>
+            <a href="#" onclick="adminAccess()">Administração</a>
+        </div>
+    </nav>
+
+    <div class="menu">
+        <a href="#">Medicamentos</a>
+        <a href="#">Beleza</a>
+        <a href="#">Vitaminas e Suplementos</a>
+        <a href="#">Cuidados Pessoais</a>
+        <a href="#">Higiene</a>
+        <a href="#">Dermocosméticos</a>
+        <a href="#">Promoções</a>
+    </div>
+
     <main>
-        <h2>Clientes</h2>
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Telefone</th>
-                <th>Email</th>
-                <th>Gênero</th>
-                <th>CPF</th>
-                <th>Idade</th>
-                <th>CEP</th>
-                <th>Endereço</th>
-                <th>Ações</th>
-            </tr>
-            {% for cliente in clientes %}
-            <tr>
-                <td>{{ cliente.ID }}</td>
-                <td>{{ cliente.NOME }}</td>
-                <td>{{ cliente.TELEFONE }}</td>
-                <td>{{ cliente.EMAIL }}</td>
-                <td>{{ cliente.GENERO }}</td>
-                <td>{{ cliente.CPF }}</td>
-                <td>{{ cliente.IDADE }}</td>
-                <td>{{ cliente.CEP }}</td>
-                <td>{{ cliente.ENDERECO }}</td>
-                <td>
-                    <form action="/editar_cliente/{{ cliente.ID }}" method="post" style="display:inline;">
-                        <input type="text" name="nome" placeholder="Nome" value="{{ cliente.NOME }}" required>
-                        <input type="tel" name="telefone" placeholder="Telefone" value="{{ cliente.TELEFONE }}" required>
-                        <input type="email" name="email" placeholder="Email" value="{{ cliente.EMAIL }}" required>
-                        <input type="text" name="genero" placeholder="Gênero" value="{{ cliente.GENERO }}" required>
-                        <input type="text" name="cpf" placeholder="CPF" value="{{ cliente.CPF }}" required>
-                        <input type="number" name="idade" placeholder="Idade" value="{{ cliente.IDADE }}" required>
-                        <input type="text" name="cep" placeholder="CEP" value="{{ cliente.CEP }}" required>
-                        <input type="text" name="endereco" placeholder="Endereço" value="{{ cliente.ENDERECO }}" required>
-                        <button type="submit">Editar</button>
+        <h2>Bem-vindo à Farmácia Impacta Saúde</h2>
+        <p>Explore nossas seções e encontre os melhores produtos para sua saúde e bem-estar!</p>
 
-                    </form>
-                    <form action="/excluir_cliente/{{ cliente.ID }}" method="post" style="display:inline;">
-                        <button type="submit">Excluir</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-
-        <h2>Adicionar Novo Cliente</h2>
-        <form action="/adicionar_cliente" method="post">
-            <input type="text" name="nome" placeholder="Nome" required>
-            <input type="text" name="telefone" placeholder="Telefone" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="text" name="genero" placeholder="Gênero" required>
-            <input type="text" name="cpf" placeholder="CPF" required>
-            <input type="number" name="idade" placeholder="Idade" required>
-            <input type="text" name="cep" placeholder="CEP" required>
-            <input type="text" name="endereco" placeholder="Endereço" required>
-            <button type="submit">Adicionar Cliente</button>
-        </form>
-
-        <h2>Produtos</h2>
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Fabricante</th>
-                <th>Data de Validade</th>
-                <th>Quantidade em Estoque</th>
-                <th>Valor</th>
-                <th>Ações</th>
-            </tr>
+        <div class="product-grid">
             {% for produto in produtos %}
-            <tr>
-                <td>{{ produto.ID_PROD }}</td>
-                <td>{{ produto.NOME_PROD }}</td>
-                <td>{{ produto.FABRICANTE }}</td>
-                <td>{{ produto.DT_VALIDADE }}</td>
-                <td>{{ produto.QNTD_ESTOQUE }}</td>
-                <td>{{ produto.VALOR }}</td>
-                <td>
-                    <form action="/editar_produto/{{ produto.ID_PROD }}" method="post" style="display:inline;">
-                        <input type="text" name="nome" placeholder="Nome" value="{{ produto.NOME_PROD }}" required>
-                        <input type="text" name="fabricante" placeholder="Fabricante" value="{{ produto.FABRICANTE }}" required>
-                        <input type="date" name="dt_validade" placeholder="Data de Validade" value="{{ produto.DT_VALIDADE }}" required>
-                        <input type="number" name="qntd_estoque" placeholder="Quantidade" value="{{ produto.QNTD_ESTOQUE }}" required>
-                        <input type="text" name="valor" placeholder="Valor" value="{{ produto.VALOR }}" required>
-                        <button type="submit">Editar</button>
-                    </form>
-                    <form action="/excluir_produto/{{ produto.ID_PROD }}" method="post" style="display:inline;">
-                        <button type="submit">Excluir</button>
-                    </form>
-                </td>
-            </tr>
+            <div class="product-card" onclick="showProductDescription({{ produto.ID_PROD }})">
+                <h3>{{ produto.NOME_PROD }}</h3>
+                <p>Fabricante: {{ produto.FABRICANTE }}</p>
+                <p>Seção: {{ produto.SECAO }}</p>
+                <p>Valor: R$ {{ "%.2f"|format(produto.VALOR) }}</p>
+            </div>
             {% endfor %}
-        </table>
-
-        <h2>Adicionar Novo Produto</h2>
-        <form action="/adicionar_produto" method="post">
-            <input type="text" name="nome" placeholder="Nome" required>
-            <input type="text" name="fabricante" placeholder="Fabricante" required>
-            <input type="date" name="dt_validade" placeholder="Data de Validade" required>
-            <input type="number" name="qntd_estoque" placeholder="Quantidade" required>
-            <input type="text" name="valor" placeholder="Valor" required>
-            <button type="submit">Adicionar Produto</button>
-        </form>
+        </div>
     </main>
 
     <footer>

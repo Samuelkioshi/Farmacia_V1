@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Produto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        header, footer {
+            background-color: #2196F3;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+        main {
+            padding: 1em;
+            text-align: center;
+        }
+        .back-button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .back-button:hover {
+            background-color: #1E88E5;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Detalhes do Produto</h1>
+    </header>
+
+    <main>
+        <h2>{{ produto.NOME_PROD }}</h2>
+        <p><strong>Descrição:</strong> {{ produto.DESCRICAO }}</p>
+        <p><strong>Seção:</strong> {{ produto.SECAO }}</p>
+        <!--<p><strong>Valor: R$ </strong> {{ produto.VALOR }}</p>-->
+        <button class="back-button" onclick="window.history.back()">Voltar</button>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Farmácia Impacta Saúde. Todos os direitos reservados.</p>
+    </footer>
+</body>
+</html>

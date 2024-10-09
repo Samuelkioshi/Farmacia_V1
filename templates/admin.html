@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administração</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        header, footer {
+            background-color: #2196F3;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+        main {
+            padding: 2em;
+            text-align: center;
+        }
+        form {
+            margin: 1em 0;
+        }
+        input, select, button {
+            margin: 0.5em;
+            padding: 0.5em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Administração da Farmácia</h1>
+    </header>
+
+    <main>
+        <h2>Gerenciar Produtos</h2>
+        <form action="/adicionar_produto" method="post">
+            <input type="text" name="nome" placeholder="Nome do Produto" required>
+            <input type="text" name="fabricante" placeholder="Fabricante" required>
+            <input type="date" name="dt_validade" required>
+            <input type="number" name="qntd_estoque" placeholder="Quantidade em Estoque" required>
+            <input type="text" name="valor" placeholder="Valor" required>
+            <select name="secao" required>
+                <option value="Medicamentos">Medicamentos</option>
+                <option value="Higiene Pessoal">Higiene Pessoal</option>
+                <option value="Beleza">Beleza</option>
+                <option value="Vitaminas">Vitaminas e Suplementos</option>
+                <option value="Dermocosméticos">Dermocosméticos</option>
+            </select>
+            <button type="submit">Adicionar Produto</button>
+        </form>
+
+        <h3>Lista de Produtos</h3>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Seção</th>
+                <th>Ações</th>
+            </tr>
+            {% for produto in produtos %}
+            <tr>
+                <td>{{ produto.ID_PROD }}</td>
+                <td>{{ produto.NOME_PROD }}</td>
+                <td>{{ produto.SECAO }}</td>
+                <td>
+                    <form action="/editar_produto/{{ produto.ID_PROD }}" method="post" style="display:inline;">
+                        <input type="text" name="nome" placeholder="Novo Nome">
+                        <input type="text" name="fabricante" placeholder="Novo Fabricante">
+                        <input type="date" name="dt_validade" placeholder="Nova Validade">
+                        <input type="number" name="qntd_estoque" placeholder="Nova Qntd Estoque">
+                        <input type="text" name="valor" placeholder="Novo Valor">
+                        <select name="secao">
+                            <option value="Medicamentos">Medicamentos</option>
+                            <option value="Higiene Pessoal">Higiene Pessoal</option>
+                            <option value="Beleza">Beleza</option>
+                            <option value="Vitaminas">Vitaminas e Suplementos</option>
+                            <option value="Dermocosméticos">Dermocosméticos</option>
+                        </select>
+                        <button type="submit">Editar</button>
+                    </form>
+                    <form action="/excluir_produto/{{ produto.ID_PROD }}" method="post" style="display:inline;">
+                        <button type="submit" onclick="return confirm('Tem certeza que deseja excluir?');">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h2>Gerenciar Clientes</h2>
+        <form action="/adicionar_cliente" method="post">
+            <input type="text" name="nome" placeholder="Nome do Cliente" required>
+            <input type="text" name="telefone" placeholder="Telefone" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <select name="genero" required>
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Outro">Outro</option>
+            </select>
+            <input type="text" name="cpf" placeholder="CPF" required>
+            <input type="number" name="idade" placeholder="Idade" required>
+            <input type="text" name="cep" placeholder="CEP" required>
+            <input type="text" name="endereco" placeholder="Endereço" required>
+            <button type="submit">Adicionar Cliente</button>
+        </form>
+
+        <h3>Lista de Clientes</h3>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Ações</th>
+            </tr>
+            {% for cliente in clientes %}
+            <tr>
+                <td>{{ cliente.ID }}</td>
+                <td>{{ cliente.NOME }}</td>
+                <td>
+                    <form action="/editar_cliente/{{ cliente.ID }}" method="post" style="display:inline;">
+                        <input type="text" name="nome" placeholder="Novo Nome">
+                        <button type="submit">Editar</button>
+                    </form>
+                    <form action="/excluir_cliente/{{ cliente.ID }}" method="post" style="display:inline;">
+                        <button type="submit" onclick="return confirm('Tem certeza que deseja excluir?');">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Farmácia</p>
+    </footer>
+</body>
+</html>
