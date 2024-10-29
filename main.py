@@ -23,7 +23,7 @@ def home():
     cursor.execute("SELECT ID_PROD, NOME_PROD, FABRICANTE, DT_VALIDADE, QNTD_ESTOQUE, VALOR, SECAO FROM TB_PRODUTOS")
     produtos = cursor.fetchall()
 
-    cursor.execute("SELECT ID, NOME, TELEFONE, EMAIL, GENERO, CPF, IDADE, CEP, ENDERECO FROM TB_CLIENTE")
+    cursor.execute("SELECT ID, NOME, TELEFONE, EMAIL, GENERO, CPF, IDADE, CEP, ENDERECO FROM TB_CLIENTEs")
     clientes = cursor.fetchall()
 
     conn.close()
@@ -80,7 +80,7 @@ def ver_produto(product_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT NOME_PROD, DESCRICAO, IMAGEM, SECAO FROM TB_PRODUTOS WHERE ID_PROD = ?", product_id)
+    cursor.execute("SELECT NOME_PROD, DESCRICAO, SECAO FROM TB_PRODUTOS WHERE ID_PROD = ?", product_id)
     produto = cursor.fetchone()
 
     conn.close()
