@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 import pyodbc
 
 app = Flask(__name__)
-app.secret_key = 'chave_secreta'  
+app.secret_key = 'chave_secreta'
 
 conn_str = (
     "DRIVER={SQL Server};"
@@ -17,17 +17,24 @@ def get_db_connection():
 
 @app.route('/')
 def home():
+    search_query = request.args.get('search', '')
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT ID_PROD, NOME_PROD, FABRICANTE, DT_VALIDADE, QNTD_ESTOQUE, VALOR, SECAO FROM TB_PRODUTOS")
+    if search_query:
+        cursor.execute("SELECT ID_PROD, NOME_PROD, FABRICANTE, DT_VALIDADE, QNTD_ESTOQUE, VALOR, SECAO FROM TB_PRODUTOS WHERE NOME_PROD LIKE ?", f'%{search_query}%')
+    else:
+        cursor.execute("SELECT ID_PROD, NOME_PROD, FABRICANTE, DT_VALIDADE, QNTD_ESTOQUE, VALOR, SECAO FROM TB_PRODUTOS")
+    
     produtos = cursor.fetchall()
 
     cursor.execute("SELECT ID, NOME, TELEFONE, EMAIL, GENERO, CPF, IDADE, CEP, ENDERECO FROM TB_CLIENTEs")
     clientes = cursor.fetchall()
 
     conn.close()
-    return render_template('home.html', produtos=produtos, clientes=clientes)
+    return render_template('home.html', produtos=produtos, clientes=clientes, search_query=search_query)
+
+# As rotas de adicionar, excluir e editar produtos e clientes permanecem inalteradas.
 
 @app.route('/adicionar_produto', methods=['POST'])
 def adicionar_produto():
