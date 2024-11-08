@@ -40,12 +40,29 @@
         th {
             background-color: #f2f2f2;
         }
+        .back-button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .back-button:hover {
+            background-color: #1E88E5;
+        }
     </style>
 </head>
 <body>
     <header>
         <h1>Administração da Farmácia</h1>
     </header>
+
+    <main>
+        <div style="position: absolute; top: 140px; left: 20px;">
+            <button class="back-button" onclick="window.history.back()">Voltar</button>
+        </div>
+    </main>
 
     <main>
         <h2>Gerenciar Produtos</h2>
@@ -145,7 +162,8 @@
     </main>
 
     <footer>
-        <p>&copy; 2024 Farmácia</p>
+        <p>&copy; 2024 Farmácia Impacta Saúde. Todos os direitos reservados.</p>
+        <p>Contato: contato@farmaciaimpactasaude.com.br | Telefone: (11) 1234-5678</p>
     </footer>
 </body>
 </html>

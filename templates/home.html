@@ -107,11 +107,13 @@
 
     <nav>
         <div>
-            <a href="#">Minha Conta</a>
-            <a href="#">Carrinho de Compras</a>
+            <button onclick="window.location.href='/carrinho'"
+            style="padding: 10px 20px; background-color: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer;" 
+            style="position: absolute; top: 150px; left: 20px;">Carrinho de Compras</button>
         </div>
         <div>
-            <a href="#" onclick="adminAccess()">Administração</a>
+            <button onclick="window.location.href='/admin'" 
+            style="padding: 10px 20px; background-color: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer;">Administração</button>
         </div>
     </nav>
 
@@ -138,9 +140,9 @@
 
         <div class="product-grid">
             {% for produto in produtos %}
-            <div class="product-card" onclick="showProductDescription({{ produto.ID_PROD }})">
+            <div class="product-card" onclick="showProductDescription({ produto.ID_PROD })">
                 <h3>{{ produto.NOME_PROD }}</h3>
-                <p>Fabricante: {{ produto.FABRICANTE }}</p>
+                <p>Fabricante: {{ produto.FABRICANTE }}</p> 
                 <p>Seção: {{ produto.SECAO }}</p>
                 <p>Valor: R$ {{ "%.2f"|format(produto.VALOR) }}</p>
             </div>

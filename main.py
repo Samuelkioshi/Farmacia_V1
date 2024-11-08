@@ -163,14 +163,14 @@ def editar_cliente(id_cliente):
 
     return redirect(url_for('home'))
 
-@app.route('/admin', methods=['POST'])
+@app.route('/admin', methods=['GET'])
 def admin_access():
-    senha = request.form['senha']
-    if senha == '123456':
-        return render_template('admin.html')  # Renderiza uma página de administração
-    else:
-        flash('Senha incorreta!')
-        return redirect(url_for('home'))
+    #senha = request.form['senha']
+    #if senha == '123456':
+    return render_template('admin.html')  # Renderiza uma página de administração
+   # else:
+   #     flash('Senha incorreta!')
+    #return redirect(url_for('home'))
 
 if __name__ == '__main__':
     app.run(debug=True)
