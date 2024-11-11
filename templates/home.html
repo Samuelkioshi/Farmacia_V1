@@ -122,7 +122,6 @@
         <a href="#">Beleza</a>
         <a href="#">Vitaminas e Suplementos</a>
         <a href="#">Cuidados Pessoais</a>
-        <a href="#">Higiene</a>
         <a href="#">Dermocosméticos</a>
         <a href="#">Promoções</a>
     </div>
@@ -140,7 +139,7 @@
 
         <div class="product-grid">
             {% for produto in produtos %}
-            <div class="product-card" onclick="showProductDescription({ produto.ID_PROD })">
+            <div class="product-card" onclick="showProductDescription({ produto,ID_PROD })">
                 <h3>{{ produto.NOME_PROD }}</h3>
                 <p>Fabricante: {{ produto.FABRICANTE }}</p> 
                 <p>Seção: {{ produto.SECAO }}</p>

@@ -44,11 +44,12 @@ def adicionar_produto():
     qntd_estoque = request.form['qntd_estoque']
     valor = request.form['valor']
     secao = request.form['secao']
+    descricao = request.form['descricao']
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO TB_PRODUTOS (NOME_PROD, FABRICANTE, DT_VALIDADE, QNTD_ESTOQUE, VALOR, SECAO) VALUES (?, ?, ?, ?, ?, ?)",
-                   (nome, fabricante, dt_validade, qntd_estoque, valor, secao))
+    cursor.execute("INSERT INTO TB_PRODUTOS (NOME_PROD, FABRICANTE, DT_VALIDADE, QNTD_ESTOQUE, VALOR, SECAO, DESCRICAO) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                   (nome, fabricante, dt_validade, qntd_estoque, valor, secao, descricao))
     conn.commit()
     conn.close()
 
@@ -87,7 +88,7 @@ def ver_produto(product_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT NOME_PROD, DESCRICAO, SECAO FROM TB_PRODUTOS WHERE ID_PROD = ?", product_id)
+    cursor.execute("SELECT NOME_PROD, DESCRICAO, VALOR, SECAO FROM TB_PRODUTOS WHERE ID_PROD = ?", product_id)
     produto = cursor.fetchone()
 
     conn.close()
@@ -165,12 +166,7 @@ def editar_cliente(id_cliente):
 
 @app.route('/admin', methods=['GET'])
 def admin_access():
-    #senha = request.form['senha']
-    #if senha == '123456':
     return render_template('admin.html')  # Renderiza uma página de administração
-   # else:
-   #     flash('Senha incorreta!')
-    #return redirect(url_for('home'))
 
 if __name__ == '__main__':
     app.run(debug=True)

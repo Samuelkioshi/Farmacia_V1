@@ -71,14 +71,15 @@
             <input type="text" name="fabricante" placeholder="Fabricante" required>
             <input type="date" name="dt_validade" required>
             <input type="number" name="qntd_estoque" placeholder="Quantidade em Estoque" required>
-            <input type="text" name="valor" placeholder="Valor" required>
+            <input type="number" name="valor" placeholder="Valor" required>
             <select name="secao" required>
                 <option value="Medicamentos">Medicamentos</option>
-                <option value="Higiene Pessoal">Higiene Pessoal</option>
+                <option value="Cuidados pessoais">Cuidados pessoais</option>
                 <option value="Beleza">Beleza</option>
                 <option value="Vitaminas">Vitaminas e Suplementos</option>
                 <option value="Dermocosméticos">Dermocosméticos</option>
             </select>
+            <input type="text" name="descricao" placeholder="Descrição" required>
             <button type="submit">Adicionar Produto</button>
         </form>
 
@@ -88,14 +89,14 @@
                 <th>ID</th>
                 <th>Nome</th>
                 <th>Seção</th>
-                <th>Ações</th>
+                <th>Descrição</th>
             </tr>
             {% for produto in produtos %}
             <tr>
                 <td>{{ produto.ID_PROD }}</td>
                 <td>{{ produto.NOME_PROD }}</td>
                 <td>{{ produto.SECAO }}</td>
-                <td>
+                <td>            
                     <form action="/editar_produto/{{ produto.ID_PROD }}" method="post" style="display:inline;">
                         <input type="text" name="nome" placeholder="Novo Nome">
                         <input type="text" name="fabricante" placeholder="Novo Fabricante">
@@ -116,9 +117,8 @@
                     </form>
                 </td>
             </tr>
-            {% endfor %}
-        </table>
-
+            {% endfor %}  
+        </table>       
         <h2>Gerenciar Clientes</h2>
         <form action="/adicionar_cliente" method="post">
             <input type="text" name="nome" placeholder="Nome do Cliente" required>
