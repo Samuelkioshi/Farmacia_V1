@@ -52,6 +52,7 @@
             background-color: #1E88E5;
         }
     </style>
+
 </head>
 <body>
     <header>
@@ -60,12 +61,10 @@
 
     <main>
         <div style="position: absolute; top: 140px; left: 20px;">
-            <button class="back-button" onclick="window.history.back()">Voltar</button>
+            <button class="back-button" onclick="window.location.href='http://127.0.0.1:5000/?search='">Voltar</button>
         </div>
-    </main>
 
-    <main>
-        <h2>Gerenciar Produtos</h2>
+        <h2>Adicionar Novo Produto</h2>
         <form action="/adicionar_produto" method="post">
             <input type="text" name="nome" placeholder="Nome do Produto" required>
             <input type="text" name="fabricante" placeholder="Fabricante" required>
@@ -82,34 +81,23 @@
             <input type="text" name="descricao" placeholder="Descrição" required>
             <button type="submit">Adicionar Produto</button>
         </form>
-
-        <h3>Lista de Produtos</h3>
+        <h2>Gerenciar Produtos</h2>
         <table>
             <tr>
                 <th>ID</th>
                 <th>Nome</th>
                 <th>Seção</th>
                 <th>Descrição</th>
+                <th>Ações</th>
             </tr>
             {% for produto in produtos %}
             <tr>
                 <td>{{ produto.ID_PROD }}</td>
                 <td>{{ produto.NOME_PROD }}</td>
                 <td>{{ produto.SECAO }}</td>
-                <td>            
+                <td>{{ produto.DESCRICAO }}</td>
+                <td>
                     <form action="/editar_produto/{{ produto.ID_PROD }}" method="post" style="display:inline;">
-                        <input type="text" name="nome" placeholder="Novo Nome">
-                        <input type="text" name="fabricante" placeholder="Novo Fabricante">
-                        <input type="date" name="dt_validade" placeholder="Nova Validade">
-                        <input type="number" name="qntd_estoque" placeholder="Nova Qntd Estoque">
-                        <input type="text" name="valor" placeholder="Novo Valor">
-                        <select name="secao">
-                            <option value="Medicamentos">Medicamentos</option>
-                            <option value="Higiene Pessoal">Higiene Pessoal</option>
-                            <option value="Beleza">Beleza</option>
-                            <option value="Vitaminas">Vitaminas e Suplementos</option>
-                            <option value="Dermocosméticos">Dermocosméticos</option>
-                        </select>
                         <button type="submit">Editar</button>
                     </form>
                     <form action="/excluir_produto/{{ produto.ID_PROD }}" method="post" style="display:inline;">
@@ -117,26 +105,10 @@
                     </form>
                 </td>
             </tr>
-            {% endfor %}  
-        </table>       
-        <h2>Gerenciar Clientes</h2>
-        <form action="/adicionar_cliente" method="post">
-            <input type="text" name="nome" placeholder="Nome do Cliente" required>
-            <input type="text" name="telefone" placeholder="Telefone" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <select name="genero" required>
-                <option value="Masculino">Masculino</option>
-                <option value="Feminino">Feminino</option>
-                <option value="Outro">Outro</option>
-            </select>
-            <input type="text" name="cpf" placeholder="CPF" required>
-            <input type="number" name="idade" placeholder="Idade" required>
-            <input type="text" name="cep" placeholder="CEP" required>
-            <input type="text" name="endereco" placeholder="Endereço" required>
-            <button type="submit">Adicionar Cliente</button>
-        </form>
+            {% endfor %}
+        </table>
 
-        <h3>Lista de Clientes</h3>
+        <h2>Gerenciar Clientes</h2>
         <table>
             <tr>
                 <th>ID</th>
@@ -149,7 +121,6 @@
                 <td>{{ cliente.NOME }}</td>
                 <td>
                     <form action="/editar_cliente/{{ cliente.ID }}" method="post" style="display:inline;">
-                        <input type="text" name="nome" placeholder="Novo Nome">
                         <button type="submit">Editar</button>
                     </form>
                     <form action="/excluir_cliente/{{ cliente.ID }}" method="post" style="display:inline;">
@@ -160,10 +131,5 @@
             {% endfor %}
         </table>
     </main>
-
-    <footer>
-        <p>&copy; 2024 Farmácia Impacta Saúde. Todos os direitos reservados.</p>
-        <p>Contato: contato@farmaciaimpactasaude.com.br | Telefone: (11) 1234-5678</p>
-    </footer>
 </body>
 </html>
