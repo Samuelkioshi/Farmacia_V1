@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Cliente</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        header {
+            background-color: #2196F3;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+        main {
+            padding: 2em;
+        }
+        input, select, button {
+            margin: 0.5em;
+            padding: 0.5em;
+        }
+        .back-button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 1em;
+        }
+        .back-button:hover {
+            background-color: #1E88E5;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Editar Cliente</h1>
+    </header>
+
+    <main>
+        <button class="back-button" onclick="window.history.back()">Voltar</button>
+        <form action="{{ url_for('editar_cliente', id=cliente.ID) }}" method="post">
+            <input type="text" name="nome" value="{{ cliente.NOME }}" placeholder="Nome" required>
+            <input type="text" name="telefone" value="{{ cliente.TELEFONE }}" placeholder="Telefone" required>
+            <input type="email" name="email" value="{{ cliente.EMAIL }}" placeholder="Email" required>
+            <select name="genero" required>
+                <option value="Masculino" {% if cliente.GENERO == 'Masculino' %}selected{% endif %}>Masculino</option>
+                <option value="Feminino" {% if cliente.GENERO == 'Feminino' %}selected{% endif %}>Feminino</option>
+                <option value="Outro" {% if cliente.GENERO == 'Outro' %}selected{% endif %}>Outro</option>
+            </select>
+            <input type="text" name="cpf" value="{{ cliente.CPF }}" placeholder="CPF" required>
+            <input type="number" name="idade" value="{{ cliente.IDADE }}" placeholder="Idade" required>
+            <input type="text" name="cep" value="{{ cliente.CEP }}" placeholder="CEP" required>
+            <input type="text" name="endereco" value="{{ cliente.ENDERECO }}" placeholder="Endereço" required>
+            <button type="submit">Atualizar Cliente</button>
+        </form>
+    </main>
+</body>
+</html>

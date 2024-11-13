@@ -52,7 +52,6 @@
             background-color: #1E88E5;
         }
     </style>
-
 </head>
 <body>
     <header>
@@ -81,12 +80,14 @@
             <input type="text" name="descricao" placeholder="Descrição" required>
             <button type="submit">Adicionar Produto</button>
         </form>
+
         <h2>Gerenciar Produtos</h2>
         <table>
             <tr>
                 <th>ID</th>
                 <th>Nome</th>
                 <th>Seção</th>
+                <th>Valor</th>
                 <th>Descrição</th>
                 <th>Ações</th>
             </tr>
@@ -95,11 +96,13 @@
                 <td>{{ produto.ID_PROD }}</td>
                 <td>{{ produto.NOME_PROD }}</td>
                 <td>{{ produto.SECAO }}</td>
+                <td>{{ "%.2f"|format(produto.VALOR) }} </td>
                 <td>{{ produto.DESCRICAO }}</td>
                 <td>
-                    <form action="/editar_produto/{{ produto.ID_PROD }}" method="post" style="display:inline;">
-                        <button type="submit">Editar</button>
-                    </form>
+                    <!-- Botão para editar o produto com o ID correto -->
+                    <a href="{{ url_for('editar_produto', id_prod=produto.ID_PROD) }}">
+                        <button>Editar</button>
+                    </a>
                     <form action="/excluir_produto/{{ produto.ID_PROD }}" method="post" style="display:inline;">
                         <button type="submit" onclick="return confirm('Tem certeza que deseja excluir?');">Excluir</button>
                     </form>
@@ -108,21 +111,44 @@
             {% endfor %}
         </table>
 
+        <h2>Adicionar Novo Cliente</h2>
+        <form action="/adicionar_cliente" method="post">
+            <input type="text" name="nome" placeholder="Nome do Cliente" required>
+            <input type="text" name="telefone" placeholder="Telefone" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <select name="genero" required>
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Outro">Outro</option>
+            </select>
+            <input type="text" name="cpf" placeholder="CPF" required>
+            <input type="number" name="idade" placeholder="Idade" required>
+            <input type="text" name="cep" placeholder="CEP" required>
+            <input type="text" name="endereco" placeholder="Endereço" required>
+            <button type="submit">Adicionar Cliente</button>
+        </form>
         <h2>Gerenciar Clientes</h2>
         <table>
             <tr>
                 <th>ID</th>
                 <th>Nome</th>
+                <th>CPF</th>
+                <th>Telefone</th>
+                <th>Email</th>
                 <th>Ações</th>
             </tr>
             {% for cliente in clientes %}
             <tr>
                 <td>{{ cliente.ID }}</td>
                 <td>{{ cliente.NOME }}</td>
+                <td>{{ cliente.CPF }}</td>
+                <td>{{ cliente.TELEFONE }}</td>
+                <td>{{ cliente.EMAIL }}</td>
                 <td>
-                    <form action="/editar_cliente/{{ cliente.ID }}" method="post" style="display:inline;">
-                        <button type="submit">Editar</button>
-                    </form>
+                    <!-- Link para editar o cliente -->
+                    <a href="{{ url_for('editar_cliente', id=cliente.ID) }}">
+                        <button>Editar</button>
+                    </a>
                     <form action="/excluir_cliente/{{ cliente.ID }}" method="post" style="display:inline;">
                         <button type="submit" onclick="return confirm('Tem certeza que deseja excluir?');">Excluir</button>
                     </form>

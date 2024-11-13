@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Produto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        header, footer {
+            background-color: #2196F3;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+        main {
+            padding: 2em;
+            max-width: 600px;
+            margin: auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 1em;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+        }
+        input, select, textarea, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #1E88E5;
+        }
+        .back-button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 1em;
+        }
+        .back-button:hover {
+            background-color: #1E88E5;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Editar Produto</h1>
+</header>
+
+<main>
+    <button class="back-button" onclick="window.history.back()">Voltar</button>
+    
+    <h2>Editar Produto</h2>
+    
+    <form action="{{ url_for('editar_produto', id_prod=produto.ID_PROD) }}" method="post">
+        <input type="text" name="nome_prod" value="{{ produto.NOME_PROD }}" required placeholder="Nome do Produto">
+        <input type="text" name="fabricante" value="{{ produto.FABRICANTE }}" required placeholder="Fabricante">
+        <input type="date" name="dt_validade" value="{{ produto.DT_VALIDADE }}" required placeholder="Data de Validade">
+        <input type="number" name="qntd_estoque" value="{{ produto.QNTD_ESTOQUE }}" required placeholder="Quantidade em Estoque">
+        <input type="number" step="0.01" name="valor" value="{{ produto.VALOR }}" required placeholder="Valor do Produto">
+        
+        <select name="secao" required>
+            <option value="Medicamentos" {% if produto.SECAO == 'Medicamentos' %}selected{% endif %}>Medicamentos</option>
+            <option value="Cuidados pessoais" {% if produto.SECAO == 'Cuidados pessoais' %}selected{% endif %}>Cuidados pessoais</option>
+            <!-- Adicione outras opções conforme necessário -->
+        </select>
+        
+        <textarea name="descricao" required placeholder="Descrição do Produto">{{ produto.DESCRICAO }}</textarea>
+        
+        <button type="submit">Atualizar Produto</button>
+    </form>
+</main>
+
+    <footer>
+        <p>&copy; 2024 Farmácia Impacta Saúde. Todos os direitos reservados.</p>
+        <p>Contato: contato@farmaciaimpactasaude.com.br | Telefone: (11) 1234-5678</p>
+    </footer>
+
+</body>
+</html>

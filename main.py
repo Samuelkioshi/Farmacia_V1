@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 import pyodbc
 
 app = Flask(__name__)
@@ -45,11 +45,11 @@ def admin_access():
     cursor = conn.cursor()
 
     # Consulta todos os produtos
-    cursor.execute("SELECT ID_PROD, NOME_PROD, SECAO, DESCRICAO FROM TB_PRODUTOS")
+    cursor.execute("SELECT ID_PROD, NOME_PROD, SECAO, VALOR, DESCRICAO FROM TB_PRODUTOS")
     produtos = cursor.fetchall()
 
     # Consulta todos os clientes
-    cursor.execute("SELECT ID, NOME FROM TB_CLIENTES")
+    cursor.execute("SELECT ID, NOME, CPF, TELEFONE, EMAIL FROM TB_CLIENTES")
     clientes = cursor.fetchall()
 
     conn.close()
@@ -85,28 +85,38 @@ def excluir_produto(id_prod):
 
     return redirect(url_for('admin_access'))
 
-@app.route('/editar_produto/<int:id_prod>', methods=['POST'])
+@app.route('/editar_produto/<int:id_prod>', methods=['GET', 'POST'])
 def editar_produto(id_prod):
-    nome_prod = request.form['nome_prod']
-    fabricante = request.form['fabricante']
-    dt_validade = request.form['dt_validade']
-    qntd_estoque = request.form['qntd_estoque']
-    valor = request.form['valor']
-    secao = request.form['secao']
-    descricao = request.form['descricao']
+    if request.method == 'POST':
+        # Processa a atualização do produto
+        nome_prod = request.form['nome_prod']
+        fabricante = request.form['fabricante']
+        dt_validade = request.form['dt_validade']
+        qntd_estoque = request.form['qntd_estoque']
+        valor = request.form['valor']
+        secao = request.form['secao']
+        descricao = request.form['descricao']
 
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute(
-        "UPDATE TB_PRODUTOS SET NOME_PROD = ?, FABRICANTE = ?, DT_VALIDADE = ?, QNTD_ESTOQUE = ?, VALOR = ?, SECAO = ?, DESCRICAO = ? WHERE ID_PROD = ?",
-        (nome_prod, fabricante, dt_validade, qntd_estoque, valor, secao, descricao, id_prod)
-    )
-    conn.commit()
-    conn.close()
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE TB_PRODUTOS SET NOME_PROD = ?, FABRICANTE = ?, DT_VALIDADE = ?, QNTD_ESTOQUE = ?, VALOR = ?, SECAO = ?, DESCRICAO = ? WHERE ID_PROD = ?",
+            (nome_prod, fabricante, dt_validade, qntd_estoque, valor, secao, descricao, id_prod)
+        )
+        conn.commit()
+        conn.close()
 
-    flash('Produto atualizado com sucesso!')
-    return redirect(url_for('admin_access'))
+        flash('Produto atualizado com sucesso!')
+        return redirect(url_for('admin_access'))
+    else:
+        # Exibe o formulário com os dados do produto para edição
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM TB_PRODUTOS WHERE ID_PROD = ?", id_prod)
+        produto = cursor.fetchone()
+        conn.close()
 
+        return render_template('editar_produto.html', produto=produto)
 
 # Rotas para manipulação de clientes
 @app.route('/adicionar_cliente', methods=['POST'])
@@ -119,14 +129,13 @@ def adicionar_cliente():
     idade = request.form['idade']
     cep = request.form['cep']
     endereco = request.form['endereco']
-    
+
     conn = get_db_connection()
     cursor = conn.cursor()
 
+    # Verificar se o CPF já está cadastrado
     cursor.execute("SELECT CPF FROM TB_CLIENTES WHERE CPF = ?", cpf)
-    cliente_existente = cursor.fetchone()
-
-    if cliente_existente:
+    if cursor.fetchone():
         flash('CPF já cadastrado!')
         conn.close()
         return redirect(url_for('admin_access'))
@@ -135,49 +144,77 @@ def adicionar_cliente():
                    (nome, telefone, email, genero, cpf, idade, cep, endereco))
     conn.commit()
     conn.close()
-
+    flash('Cliente adicionado com sucesso!')
     return redirect(url_for('admin_access'))
 
-@app.route('/excluir_cliente/<int:id_cliente>', methods=['POST'])
-def excluir_cliente(id_cliente):
+@app.route('/excluir_cliente/<int:id>', methods=['POST'])
+def excluir_cliente(id):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM TB_CLIENTES WHERE ID = ?", id_cliente)
+    cursor.execute("DELETE FROM TB_CLIENTES WHERE ID = ?", id)
     conn.commit()
     conn.close()
-
+    flash('Cliente excluído com sucesso!')
     return redirect(url_for('admin_access'))
 
-@app.route('/editar_cliente/<int:id_cliente>', methods=['POST'])
-def editar_cliente(id_cliente):
-    nome = request.form['nome']
-    telefone = request.form['telefone']
-    email = request.form['email']
-    genero = request.form['genero']
-    cpf = request.form['cpf']
-    idade = request.form['idade']
-    cep = request.form['cep']
-    endereco = request.form['endereco']
-
+# Rota de edição de cliente
+@app.route('/editar_cliente/<int:id>', methods=['GET', 'POST'])
+def editar_cliente(id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT CPF FROM TB_CLIENTES WHERE CPF = ? AND ID <> ?", (cpf, id_cliente))
-    cliente_existente = cursor.fetchone()
+    if request.method == 'POST':
+        # Processa a atualização do cliente
+        nome = request.form['nome']
+        telefone = request.form['telefone']
+        email = request.form['email']
+        genero = request.form['genero']
+        cpf = request.form['cpf']
+        idade = request.form['idade']
+        cep = request.form['cep']
+        endereco = request.form['endereco']
 
-    if cliente_existente:
-        flash('CPF já cadastrado!')
+        cursor.execute(
+            "UPDATE TB_CLIENTES SET NOME = ?, TELEFONE = ?, EMAIL = ?, GENERO = ?, CPF = ?, IDADE = ?, CEP = ?, ENDERECO = ? WHERE ID = ?",
+            (nome, telefone, email, genero, cpf, idade, cep, endereco, id)
+        )
+        conn.commit()
         conn.close()
+
+        flash('Cliente atualizado com sucesso!')
         return redirect(url_for('admin_access'))
 
-    cursor.execute("UPDATE TB_CLIENTES SET NOME = ?, TELEFONE = ?, EMAIL = ?, GENERO = ?, CPF = ?, IDADE = ?, CEP = ?, ENDERECO = ? WHERE ID = ?",
-                   (nome, telefone, email, genero, cpf, idade, cep, endereco, id_cliente))
-    conn.commit()
+    else:
+        # Exibe o formulário com os dados do cliente para edição
+        cursor.execute("SELECT * FROM TB_CLIENTES WHERE ID = ?", id)
+        cliente = cursor.fetchone()
+        conn.close()
+
+        return render_template('editar_cliente.html', cliente=cliente)
+
+# Rota para exibir o produto detalhado
+@app.route('/produto/<int:id_prod>', methods=['GET'])
+def produto(id_prod):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM TB_PRODUTOS WHERE ID_PROD = ?", (id_prod,))
+    produto = cursor.fetchone()
     conn.close()
 
-    flash('Atualizado!')
-
-    return redirect(url_for('admin_access'))
+    if produto:
+        # Retorna as informações do produto como JSON
+        return jsonify({
+            'ID_PROD': produto.ID_PROD,
+            'NOME_PROD': produto.NOME_PROD,
+            'FABRICANTE': produto.FABRICANTE,
+            'SECAO': produto.SECAO,
+            'DESCRICAO': produto.DESCRICAO,
+            'VALOR': produto.VALOR,
+            'QNTD_ESTOQUE': produto.QNTD_ESTOQUE,
+            'DT_VALIDADE': produto.DT_VALIDADE
+        })
+    else:
+        return jsonify({'error': 'Produto não encontrado'}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
