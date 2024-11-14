@@ -99,7 +99,7 @@
                 <td>{{ "%.2f"|format(produto.VALOR) }} </td>
                 <td>{{ produto.DESCRICAO }}</td>
                 <td>
-                    <!-- Botão para editar o produto com o ID correto -->
+                   
                     <a href="{{ url_for('editar_produto', id_prod=produto.ID_PROD) }}">
                         <button>Editar</button>
                     </a>
@@ -145,7 +145,7 @@
                 <td>{{ cliente.TELEFONE }}</td>
                 <td>{{ cliente.EMAIL }}</td>
                 <td>
-                    <!-- Link para editar o cliente -->
+                    
                     <a href="{{ url_for('editar_cliente', id=cliente.ID) }}">
                         <button>Editar</button>
                     </a>
