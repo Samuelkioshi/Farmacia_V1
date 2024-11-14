@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 import pyodbc
 
 app = Flask(__name__)
@@ -202,6 +202,69 @@ def produto(id_prod):
         })
     else:
         return jsonify({'error': 'Produto não encontrado'}), 404
+    
+@app.before_request
+def inicializar_carrinho():
+    if 'carrinho' not in session:
+        session['carrinho'] = []
+
+@app.route('/adicionar_ao_carrinho', methods=['POST'])
+def adicionar_ao_carrinho():
+    product_id = request.json.get('id')
+    # Adiciona o produto ao carrinho (com quantidade padrão de 1)
+    session['carrinho'].append({'id': product_id, 'quantidade': 1})
+    session.modified = True
+    return jsonify({"message": "Produto adicionado ao carrinho!"})
+
+@app.route('/carrinho')
+def carrinho():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    produtos_carrinho = []
+    total_carrinho = 0
+
+    # Calcula informações do carrinho com base na sessão
+    for item in session['carrinho']:
+        cursor.execute("SELECT ID_PROD, NOME_PROD, VALOR FROM TB_PRODUTOS WHERE ID_PROD = ?", (item['id'],))
+        produto = cursor.fetchone()
+        if produto:
+            quantidade = item['quantidade']
+            valor_total_produto = produto.VALOR * quantidade
+            produtos_carrinho.append({
+                'ID_PROD': produto.ID_PROD,
+                'NOME_PROD': produto.NOME_PROD,
+                'VALOR': produto.VALOR,
+                'quantidade': quantidade,
+                'total_produto': valor_total_produto
+            })
+            total_carrinho += valor_total_produto
+
+    conn.close()
+    return render_template('carrinho.html', produtos=produtos_carrinho, total_carrinho=total_carrinho)   
+
+@app.route('/alterar_quantidade', methods=['POST'])
+def alterar_quantidade():
+    data = request.get_json()
+    produto_id = data['id']
+    quantidade = data['quantidade']
+    
+    # Lógica para alterar quantidade do produto no carrinho
+    # Exemplo:
+    # carrinho.alterar_quantidade(produto_id, quantidade)
+
+    return jsonify({"success": True, "message": "Quantidade atualizada com sucesso."})
+
+# Remover produto do carrinho
+@app.route('/remover_produto', methods=['POST'])
+def remover_produto():
+    data = request.get_json()
+    produto_id = data['id']
+    
+    # Lógica para remover produto do carrinho
+    # Exemplo:
+    # carrinho.remover_produto(produto_id)
+
+    return jsonify({"success": True, "message": "Produto removido com sucesso."})
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrinho de Compras</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        header {
+            background-color: #2196F3;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+        main {
+            padding: 2em;
+        }
+        input, select, button {
+            margin: 0.5em;
+            padding: 0.5em;
+        }
+        .back-button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 1em;
+        }
+        .back-button:hover {
+            background-color: #1E88E5;
+        }
+        .quantity-controls button {
+            padding: 5px;
+            margin: 0 5px;
+            cursor: pointer;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .delete-button {
+            background-color: #e53935;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .delete-button:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+    <script>
+        function updateQuantity(productId, action) {
+            fetch('/atualizar_quantidade', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: productId, action: action })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Atualiza a página para mostrar a nova quantidade
+                } else {
+                    alert("Erro ao atualizar a quantidade.");
+                }
+            });
+        }
+
+        function removeProduct(productId) {
+            fetch('/remover_produto', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: productId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Atualiza a página para remover o produto
+                } else {
+                    alert("Erro ao remover o produto.");
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Carrinho de Compras</h1>
+    </header>
+
+    <main>
+        <button class="back-button" onclick="window.history.back()">Voltar</button>
+        
+        <table>
+            <tr>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Valor Unitário</th>
+                <th>Total</th>
+                <th>Ações</th>
+            </tr>
+            {% for produto in produtos %}
+            <tr>
+                <td>{{ produto.NOME_PROD }}</td>
+                <td>
+                    <div class="quantity-controls">
+                        <button onclick="updateQuantity({ produto,ID_PROD }, 'decrease')">-</button>
+                        {{ produto.quantidade }}
+                        <button onclick="updateQuantity({ produto,ID_PROD }, 'increase')">+</button>
+                    </div>
+                </td>
+                <td>R$ {{ "%.2f"|format(produto.VALOR) }}</td>
+                <td>R$ {{ "%.2f"|format(produto.total_produto) }}</td>
+                <td>
+                    <button class="delete-button" onclick="removeProduct({ produto,ID_PROD })">Excluir</button>
+                </td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="4" style="text-align: right;"><strong>Total do Carrinho:</strong></td>
+                <td><strong>R$ {{ "%.2f"|format(total_carrinho) }}</strong></td>
+            </tr>
+        </table>
+    </main>
+</body>
+</html>

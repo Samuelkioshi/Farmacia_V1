@@ -92,7 +92,45 @@
         .search-bar button:hover {
             background-color: #1E88E5;
         }
+        .product-card {
+            position: relative;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .add-to-cart-button {
+            display: none;
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .product-card:hover .add-to-cart-button {
+            display: block;
+        }
     </style>
+    <script>
+        function addToCart(productId) {
+            fetch('/adicionar_ao_carrinho', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: productId })
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message));
+        }
+    </script>
+</head>
+
     <script>
         function showProductDescription(productId) {
             window.location.href = "/produto/" + productId;
@@ -140,9 +178,13 @@
             {% for produto in produtos %}
             <div class="product-card" onclick="showProductDescription({ produto,ID_PROD })">
                 <h3>{{ produto.NOME_PROD }}</h3>
-                <p>Fabricante: {{ produto.FABRICANTE }}</p> 
+                <p>Fabricante: {{ produto.FABRICANTE }}</p>
                 <p>Seção: {{ produto.SECAO }}</p>
                 <p>Valor: R$ {{ "%.2f"|format(produto.VALOR) }}</p>
+                <!-- Botão para adicionar ao carrinho -->
+                <button class="add-to-cart-button" onclick="event.stopPropagation(); addToCart({ produto,ID_PROD })">
+                    Adicionar ao Carrinho
+                </button>
             </div>
             {% endfor %}
         </div>
