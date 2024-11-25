@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Editar Produto</title>
     <style>
-        body {
+        /* body {
             font-family: Arial, sans-serif;
             background-color: #f9f9f9;
             color: #333;
@@ -64,6 +64,42 @@
         }
         .back-button:hover {
             background-color: #1E88E5;
+        } */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        header {
+            background-color: #2196F3;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+        header, footer {
+            background-color: #2196F3;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+        main {
+            padding: 2em;
+        }
+        input, select, button {
+            margin: 0.5em;
+            padding: 0.5em;
+        }
+        .back-button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 1em;
+        }
+        .back-button:hover {
+            background-color: #1E88E5;
         }
     </style>
 </head>
@@ -75,8 +111,6 @@
 
 <main>
     <button class="back-button" onclick="window.history.back()">Voltar</button>
-    
-    <h2>Editar Produto</h2>
     
     <form action="{{ url_for('editar_produto', id_prod=produto.ID_PROD) }}" method="post">
         <input type="text" name="nome_prod" value="{{ produto.NOME_PROD }}" required placeholder="Nome do Produto">
