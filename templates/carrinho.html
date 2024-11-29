@@ -5,23 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrinho de Compras</title>
     <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
         body {
             font-family: Arial, sans-serif;
             background-color: #f9f9f9;
             color: #333;
         }
-        header {
+        header, footer {
             background-color: #2196F3;
             color: white;
             text-align: center;
@@ -29,10 +18,57 @@
         }
         main {
             padding: 2em;
+            background-color: #fff;
+            margin-top: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
         }
-        input, select, button {
-            margin: 0.5em;
-            padding: 0.5em;
+        h1 {
+            color: #ffffff;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table th, table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        table th {
+            background-color: #2196F3;
+            color: white;
+        }
+        table td {
+            background-color: #f9f9f9;
+        }
+        .total {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: right;
+            color: #2196F3;
+        }
+        .empty-cart {
+            text-align: center;
+            font-size: 1.2em;
+            color: #2196F3;
+        }
+        .continue-shopping {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .continue-shopping a {
+            padding: 10px 20px;
+            background-color: #2196F3;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .continue-shopping a:hover {
+            background-color: #1E88E5;
         }
         .back-button {
             background-color: #2196F3;
@@ -41,104 +77,78 @@
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
-            margin-bottom: 1em;
+            position: absolute;
+            top: 20px;
+            left: 20px;
         }
         .back-button:hover {
             background-color: #1E88E5;
         }
-        .quantity-controls button {
-            padding: 5px;
-            margin: 0 5px;
-            cursor: pointer;
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-        .delete-button {
-            background-color: #e53935;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .delete-button:hover {
-            background-color: #d32f2f;
-        }
     </style>
-    <script>
-        function updateQuantity(productId, action) {
-            fetch('/atualizar_quantidade', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: productId, action: action })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload(); // Atualiza a página para mostrar a nova quantidade
-                } else {
-                    alert("Erro ao atualizar a quantidade.");
-                }
-            });
-        }
-
-        function removeProduct(productId) {
-            fetch('/remover_produto', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: productId })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload(); // Atualiza a página para remover o produto
-                } else {
-                    alert("Erro ao remover o produto.");
-                }
-            });
-        }
-    </script>
 </head>
 <body>
     <header>
-        <h1>Carrinho de Compras</h1>
+        <h1>Carrinho de compras</h1>
     </header>
 
     <main>
-        <button class="back-button" onclick="window.history.back()">Voltar</button>
-        
+
+        <div style="position: absolute; top: 140px; left: 20px;">
+            <button class="back-button" onclick="window.location.href='http://127.0.0.1:5000/?search='">Voltar</button>
+        </div>
+
+        <h1>Seu Carrinho</h1>
+
+        {% if carrinho %}
         <table>
-            <tr>
-                <th>Produto</th>
-                <th>Quantidade</th>
-                <th>Valor Unitário</th>
-                <th>Total</th>
-                <th>Ações</th>
-            </tr>
-            {% for produto in produtos %}
-            <tr>
-                <td>{{ produto.NOME_PROD }}</td>
-                <td>
-                    <div class="quantity-controls">
-                        <button onclick="updateQuantity({ produto,ID_PROD }, 'decrease')">-</button>
-                        {{ produto.quantidade }}
-                        <button onclick="updateQuantity({ produto,ID_PROD }, 'increase')">+</button>
-                    </div>
-                </td>
-                <td>R$ {{ "%.2f"|format(produto.VALOR) }}</td>
-                <td>R$ {{ "%.2f"|format(produto.total_produto) }}</td>
-                <td>
-                    <button class="delete-button" onclick="removeProduct({ produto,ID_PROD })">Excluir</button>
-                </td>
-            </tr>
-            {% endfor %}
-            <tr>
-                <td colspan="4" style="text-align: right;"><strong>Total do Carrinho:</strong></td>
-                <td><strong>R$ {{ "%.2f"|format(total_carrinho) }}</strong></td>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Preço Unitário</th>
+                    <th>Total</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in carrinho %}
+                <tr>
+                    <td>{{ item.NOME_PROD }}</td>
+                    <td>
+                        <form action="/atualizar_quantidade/{{ item.id }}" method="POST" style="display: inline;">
+                            <button type="submit" name="operacao" value="decrementar">-</button>
+                        </form>
+                        {{ item.quantidade }}
+                        <form action="/atualizar_quantidade/{{ item.id }}" method="POST" style="display: inline;">
+                            <button type="submit" name="operacao" value="incrementar">+</button>
+                        </form>
+                    </td>
+                    <td>R$ {{ "%.2f"|format(item.valor) }}</td>
+                    <td>R$ {{ "%.2f"|format(item.valor * item.quantidade) }}</td>
+                    <td>
+                        <form action="/remover_produto/{{ item.id }}" method="POST">
+                            <button type="submit">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
+        <div class="total">
+            <p>Total: R$ {{ "%.2f"|format(total) }}</p>
+        </div>
+        {% else %}
+        <p class="empty-cart">Seu carrinho está vazio.</p>
+        {% endif %}
+
+        <div class="continue-shopping">
+            <a href="/">Continuar comprando</a>
+        </div>
     </main>
+
+    <footer>
+        <p>&copy; 2024 Farmácia Impacta Saúde. Todos os direitos reservados.</p>
+        <p>Contato: contato@farmaciaimpactasaude.com.br | Telefone: (11) 1234-5678</p>
+    </footer>
 </body>
 </html>

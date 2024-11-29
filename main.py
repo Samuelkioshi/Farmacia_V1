@@ -19,14 +19,21 @@ def get_db_connection():
 @app.route('/')
 def home():
     search_query = request.args.get('search', '')
+    secao_selecionada = request.args.get('secao', '')  # Captura a seção selecionada
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Consulta produtos com base na pesquisa
+    # Consulta produtos com base na pesquisa e na seção
     if search_query:
-        cursor.execute("SELECT ID_PROD, NOME_PROD, FABRICANTE, DT_VALIDADE, QNTD_ESTOQUE, VALOR, SECAO FROM TB_PRODUTOS WHERE NOME_PROD LIKE ?", f'%{search_query}%')
+        if secao_selecionada:
+            cursor.execute("SELECT ID_PROD, NOME_PROD, FABRICANTE, DT_VALIDADE, QNTD_ESTOQUE, VALOR, SECAO FROM TB_PRODUTOS WHERE NOME_PROD LIKE ? AND SECAO = ?", f'%{search_query}%', secao_selecionada)
+        else:
+            cursor.execute("SELECT ID_PROD, NOME_PROD, FABRICANTE, DT_VALIDADE, QNTD_ESTOQUE, VALOR, SECAO FROM TB_PRODUTOS WHERE NOME_PROD LIKE ?", f'%{search_query}%')
     else:
-        cursor.execute("SELECT ID_PROD, NOME_PROD, FABRICANTE, DT_VALIDADE, QNTD_ESTOQUE, VALOR, SECAO FROM TB_PRODUTOS")
+        if secao_selecionada:
+            cursor.execute("SELECT ID_PROD, NOME_PROD, FABRICANTE, DT_VALIDADE, QNTD_ESTOQUE, VALOR, SECAO FROM TB_PRODUTOS WHERE SECAO = ?", secao_selecionada)
+        else:
+            cursor.execute("SELECT ID_PROD, NOME_PROD, FABRICANTE, DT_VALIDADE, QNTD_ESTOQUE, VALOR, SECAO FROM TB_PRODUTOS")
     
     produtos = cursor.fetchall()
 
@@ -35,7 +42,17 @@ def home():
     clientes = cursor.fetchall()
 
     conn.close()
-    return render_template('home.html', produtos=produtos, clientes=clientes, search_query=search_query)
+    return render_template('home.html', produtos=produtos, clientes=clientes, search_query=search_query, secao_selecionada=secao_selecionada)
+
+# Rota para listar todos os produtos
+@app.route('/todos_produtos', methods=['GET'])
+def todos_produtos():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT ID_PROD, NOME_PROD, FABRICANTE, DT_VALIDADE, QNTD_ESTOQUE, VALOR, SECAO FROM TB_PRODUTOS")
+    produtos = cursor.fetchall()
+    conn.close()
+    return render_template('todos_produtos.html', produtos=produtos)
 
 @app.route('/admin', methods=['GET'])
 def admin_access():
@@ -190,19 +207,11 @@ def produto(id_prod):
     conn.close()
 
     if produto:
-        return jsonify({
-            'ID_PROD': produto.ID_PROD,
-            'NOME_PROD': produto.NOME_PROD,
-            'FABRICANTE': produto.FABRICANTE,
-            'SECAO': produto.SECAO,
-            'DESCRICAO': produto.DESCRICAO,
-            'VALOR': produto.VALOR,
-            'QNTD_ESTOQUE': produto.QNTD_ESTOQUE,
-            'DT_VALIDADE': produto.DT_VALIDADE
-        })
+        return render_template('produto_detalhado.html', produto=produto)
     else:
-        return jsonify({'error': 'Produto não encontrado'}), 404
-    
+        flash("Produto não encontrado!")
+        return redirect(url_for('home'))
+
 @app.before_request
 def inicializar_carrinho():
     if 'carrinho' not in session:
@@ -211,10 +220,21 @@ def inicializar_carrinho():
 @app.route('/adicionar_ao_carrinho', methods=['POST'])
 def adicionar_ao_carrinho():
     product_id = request.json.get('id')
-    # Adiciona o produto ao carrinho (com quantidade padrão de 1)
-    session['carrinho'].append({'id': product_id, 'quantidade': 1})
-    session.modified = True
+    # Verifica se o produto já está no carrinho
+    found = False
+    for item in session['carrinho']:
+        if item['id'] == product_id:
+            item['quantidade'] += 1  # Aumenta a quantidade se o produto já estiver no carrinho
+            found = True
+            break
+
+    # Se o produto não estiver no carrinho, adiciona com quantidade 1
+    if not found:
+        session['carrinho'].append({'id': product_id, 'quantidade': 1})
+
+    session.modified = True  # Marca a sessão como modificada para garantir que as mudanças sejam salvas
     return jsonify({"message": "Produto adicionado ao carrinho!"})
+
 
 @app.route('/carrinho')
 def carrinho():
@@ -240,19 +260,8 @@ def carrinho():
             total_carrinho += valor_total_produto
 
     conn.close()
-    return render_template('carrinho.html', produtos=produtos_carrinho, total_carrinho=total_carrinho)   
+    return render_template('carrinho.html', produtos=produtos_carrinho, total_carrinho=total_carrinho)
 
-@app.route('/alterar_quantidade', methods=['POST'])
-def alterar_quantidade():
-    data = request.get_json()
-    produto_id = data['id']
-    quantidade = data['quantidade']
-    
-    # Lógica para alterar quantidade do produto no carrinho
-    # Exemplo:
-    # carrinho.alterar_quantidade(produto_id, quantidade)
-
-    return jsonify({"success": True, "message": "Quantidade atualizada com sucesso."})
 
 # Remover produto do carrinho
 @app.route('/remover_produto', methods=['POST'])
@@ -261,8 +270,8 @@ def remover_produto():
     produto_id = data['id']
     
     # Lógica para remover produto do carrinho
-    # Exemplo:
-    # carrinho.remover_produto(produto_id)
+    session['carrinho'] = [item for item in session['carrinho'] if item['id'] != produto_id]
+    session.modified = True
 
     return jsonify({"success": True, "message": "Produto removido com sucesso."})
 

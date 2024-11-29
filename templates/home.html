@@ -1,97 +1,75 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Farmácia Impacta Saúde</title>
     <style>
-        
         body {
             font-family: Arial, sans-serif;
             background-color: #f9f9f9;
             color: #333;
         }
-        header, footer {
+
+        header,
+        footer {
             background-color: #2196F3;
             color: white;
             text-align: center;
             padding: 1em 0;
         }
+
         nav {
             display: flex;
             justify-content: space-between;
             padding: 1em;
             background-color: #f1f1f1;
         }
+
         nav a {
             text-decoration: none;
             color: #2196F3;
             padding: 0.5em;
         }
+
         nav a:hover {
             background-color: #ddd;
             border-radius: 5px;
         }
+
         .menu {
             display: flex;
             justify-content: center;
             background-color: #e0e0e0;
             padding: 1em;
         }
+
         .menu a {
             margin: 0 1em;
             text-decoration: none;
             color: #333;
             font-weight: bold;
         }
+
         .menu a:hover {
             color: #2196F3;
         }
+
         main {
             padding: 1em;
         }
+
         h2 {
             color: #2196F3;
         }
+
         .product-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
         }
-        .product-card {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            text-align: center;
-            transition: transform 0.2s;
-            cursor: pointer;
-        }
-        .product-card:hover {
-            transform: scale(1.05);
-        }
-        .search-bar {
-            margin: 20px 0;
-            display: flex;
-            justify-content: center;
-        }
-        .search-bar input {
-            padding: 10px;
-            width: 300px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .search-bar button {
-            padding: 10px;
-            margin-left: 10px;
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .search-bar button:hover {
-            background-color: #1E88E5;
-        }
+
         .product-card {
             position: relative;
             border: 1px solid #ccc;
@@ -101,6 +79,11 @@
             transition: transform 0.2s;
             cursor: pointer;
         }
+
+        .product-card:hover {
+            transform: scale(1.05);
+        }
+
         .add-to-cart-button {
             display: none;
             position: absolute;
@@ -108,35 +91,105 @@
             left: 50%;
             transform: translateX(-50%);
             padding: 10px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .product-card:hover .add-to-cart-button {
+            display: block;
+        }
+
+        .search-bar {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-bar input {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .search-bar button {
+            padding: 10px;
+            margin-left: 10px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-bar button:hover {
+            background-color: #1E88E5;
+        }
+
+        /* Estilos para a página de detalhes do produto */
+        .product-detail {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .product-detail h1 {
+            color: #2196F3;
+        }
+
+        .product-detail p {
+            font-size: 16px;
+        }
+
+        .product-detail button {
+            padding: 10px 20px;
             background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
-        .product-card:hover .add-to-cart-button {
-            display: block;
+
+        .product-detail button:hover {
+            background-color: #45a049;
         }
     </style>
     <script>
-        function addToCart(productId) {
-            fetch('/adicionar_ao_carrinho', {
+        function showProductDescription(productId) {
+            // Redireciona para a página do produto com base no ID
+            window.location.href = "/produto/" + productId;
+        }
+
+        function adicionarAoCarrinho(productId) {
+            fetch('http://127.0.0.1:5000/adicionar_ao_carrinho', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({ id: productId })
             })
-            .then(response => response.json())
-            .then(data => alert(data.message));
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                    } else {
+                        alert('Erro ao adicionar o produto ao carrinho.');
+                    }
+                })
+                .catch(error => console.error('Erro:', error));
+
+        
+
         }
     </script>
 </head>
 
-    <script>
-        function showProductDescription(productId) {
-            window.location.href = "/produto/" + productId;
-        }
-    </script>
-</head>
 <body>
     <header>
         <h1>Farmácia Impacta Saúde</h1>
@@ -145,22 +198,26 @@
     <nav>
         <div>
             <button onclick="window.location.href='/carrinho'"
-            style="padding: 10px 20px; background-color: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer;" 
-            style="position: absolute; top: 150px; left: 20px;">Carrinho de Compras</button>
+                style="padding: 10px 20px; background-color: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Carrinho de Compras
+            </button>
         </div>
         <div>
-            <button onclick="window.location.href='/admin'" 
-            style="padding: 10px 20px; background-color: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer;">Administração</button>
+            <button onclick="window.location.href='/admin'"
+                style="padding: 10px 20px; background-color: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Administração
+            </button>
         </div>
     </nav>
 
     <div class="menu">
-        <a href="#">Medicamentos</a>
-        <a href="#">Beleza</a>
-        <a href="#">Vitaminas e Suplementos</a>
-        <a href="#">Cuidados Pessoais</a>
-        <a href="#">Dermocosméticos</a>
-        <a href="#">Promoções</a>
+        <a href="{{ url_for('home') }}">Todos os Produtos</a>
+        <a href="?secao=Medicamentos">Medicamentos</a>
+        <a href="?secao=Beleza">Beleza</a>
+        <a href="?secao=Vitaminas e Suplementos">Vitaminas e Suplementos</a>
+        <a href="?secao=Cuidados Pessoais">Cuidados Pessoais</a>
+        <a href="?secao=Dermocosméticos">Dermocosméticos</a>
+        <a href="?secao=Promoções">Promoções</a>
     </div>
 
     <main>
@@ -176,13 +233,13 @@
 
         <div class="product-grid">
             {% for produto in produtos %}
-            <div class="product-card" onclick="showProductDescription({ produto,ID_PROD })">
+            <div class="product-card" onclick="showProductDescription('{{ produto.ID_PROD }}')">
                 <h3>{{ produto.NOME_PROD }}</h3>
                 <p>Fabricante: {{ produto.FABRICANTE }}</p>
                 <p>Seção: {{ produto.SECAO }}</p>
                 <p>Valor: R$ {{ "%.2f"|format(produto.VALOR) }}</p>
-                <!-- Botão para adicionar ao carrinho -->
-                <button class="add-to-cart-button" onclick="event.stopPropagation(); addToCart({ produto,ID_PROD })">
+                <button class="add-to-cart-button"
+                    onclick="event.stopPropagation(); adicionarAoCarrinho('{{ produto.ID_PROD }}')">
                     Adicionar ao Carrinho
                 </button>
             </div>
@@ -190,9 +247,11 @@
         </div>
     </main>
 
+
     <footer>
         <p>&copy; 2024 Farmácia Impacta Saúde. Todos os direitos reservados.</p>
         <p>Contato: contato@farmaciaimpactasaude.com.br | Telefone: (11) 1234-5678</p>
     </footer>
 </body>
+
 </html>
