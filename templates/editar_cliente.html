@@ -25,9 +25,42 @@
         main {
             padding: 2em;
         }
-        input, select, button {
-            margin: 0.5em;
+        form {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1em; /* Espaço entre os campos */
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 calc(50% - 1em); /* Largura 50% menos o espaço */
+        }
+        .form-group-full {
+            flex: 1 1 100%; /* Campo ocupa largura total */
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 0.5em;
+        }
+        input, select, button, textarea {
+            width: 100%;
+            margin: 0;
             padding: 0.5em;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1E88E5;
         }
         .back-button {
             background-color: #2196F3;
@@ -41,6 +74,14 @@
         .back-button:hover {
             background-color: #1E88E5;
         }
+        textarea {
+            width: 100%; 
+            min-height: 2em; 
+            resize: vertical; 
+            font-size: 1em;
+            padding: 0.5em;
+            box-sizing: border-box; 
+        }
     </style>
 </head>
 <body>
@@ -51,24 +92,77 @@
     <main>
         <button class="back-button" onclick="window.history.back()">Voltar</button>
         <form action="{{ url_for('editar_cliente', id=cliente.ID) }}" method="post">
-            <input type="text" name="nome" value="{{ cliente.NOME }}" placeholder="Nome" required>
-            <input type="text" name="telefone" value="{{ cliente.TELEFONE }}" placeholder="Telefone" required>
-            <input type="email" name="email" value="{{ cliente.EMAIL }}" placeholder="Email" required>
-            <select name="genero" required>
-                <option value="Masculino" {% if cliente.GENERO == 'Masculino' %}selected{% endif %}>Masculino</option>
-                <option value="Feminino" {% if cliente.GENERO == 'Feminino' %}selected{% endif %}>Feminino</option>
-                <option value="Outro" {% if cliente.GENERO == 'Outro' %}selected{% endif %}>Outro</option>
-            </select>
-            <input type="text" name="cpf" value="{{ cliente.CPF }}" placeholder="CPF" required>
-            <input type="number" name="idade" value="{{ cliente.IDADE }}" placeholder="Idade" required>
-            <input type="text" name="cep" value="{{ cliente.CEP }}" placeholder="CEP" required>
-            <input type="text" name="endereco" value="{{ cliente.ENDERECO }}" placeholder="Endereço" required>
-            <button type="submit">Atualizar Cliente</button>
+            <div class="form-group">
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" name="nome" value="{{ cliente.NOME }}" placeholder="Nome" required>
+            </div>
+            <div class="form-group">
+                <label for="telefone">Telefone:</label>
+                <input type="text" name="telefone" value="{{ cliente.TELEFONE }}" placeholder="Telefone" required>
+            </div>
+            <div class="form-group">
+                <label for="email">E-mail:</label>
+                <input type="email" name="email" value="{{ cliente.EMAIL }}" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <label for="genero">Gênero:</label>
+                <select name="genero" required>
+                    <option value="Masculino" {% if cliente.GENERO == 'Masculino' %}selected{% endif %}>Masculino</option>
+                    <option value="Feminino" {% if cliente.GENERO == 'Feminino' %}selected{% endif %}>Feminino</option>
+                    <option value="Outro" {% if cliente.GENERO == 'Outro' %}selected{% endif %}>Outro</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="cpf">CPF:</label>
+                <input type="text" name="cpf" value="{{ cliente.CPF }}" placeholder="CPF" required>
+            </div>
+            <div class="form-group">
+                <label for="idade">Idade:</label>
+                <input type="number" name="idade" value="{{ cliente.IDADE }}" placeholder="Idade" required>
+            </div>
+            <div class="form-group">
+                <label for="cep">CEP:</label>
+                <input type="text" name="cep" value="{{ cliente.CEP }}" placeholder="CEP" required>
+            </div>
+            <div class="form-group">
+                <label for="endereco">Endereço:</label>
+                <input type="text" id="endereco" name="endereco" value="{{ cliente.ENDERECO }}" placeholder="Endereço" required>
+            </div>
+            <div class="form-group-full">
+                <button type="submit">Atualizar Cliente</button>
+            </div>
         </form>
-        <footer>
-            <p>&copy; 2024 Farmácia Impacta Saúde. Todos os direitos reservados.</p>
-            <p>Contato: contato@farmaciaimpactasaude.com.br | Telefone: (11) 1234-5678</p>
-        </footer>
     </main>
+
+    <footer>
+        <p>&copy; 2024 Farmácia Impacta Saúde. Todos os direitos reservados.</p>
+        <p>Contato: contato@farmaciaimpactasaude.com.br | Telefone: (11) 1234-5678</p>
+    </footer>
+
+    <script>
+        // Ajusta a largura do campo de texto baseado no conteúdo
+        function ajustarLarguraInput(input) {
+            const mirror = document.createElement('span');
+            mirror.style.visibility = 'hidden';
+            mirror.style.whiteSpace = 'nowrap';
+            mirror.style.position = 'absolute';
+            mirror.style.fontSize = window.getComputedStyle(input).fontSize;
+            mirror.style.fontFamily = window.getComputedStyle(input).fontFamily;
+            mirror.textContent = input.value || input.placeholder;
+
+            document.body.appendChild(mirror);
+            input.style.width = mirror.offsetWidth + 20 + 'px';
+            document.body.removeChild(mirror);
+        }
+
+        // Aplica a função nos inputs de nome e endereço
+        const nomeInput = document.getElementById('nome');
+        const enderecoInput = document.getElementById('endereco');
+
+        [nomeInput, enderecoInput].forEach(input => {
+            ajustarLarguraInput(input); // Configura largura inicial
+            input.addEventListener('input', () => ajustarLarguraInput(input));
+        });
+    </script>
 </body>
 </html>

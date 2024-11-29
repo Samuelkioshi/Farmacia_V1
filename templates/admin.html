@@ -71,11 +71,17 @@
 
         <h2>Adicionar Novo Produto</h2>
         <form action="/adicionar_produto" method="post">
+            <label for="nome">Nome do Produto:</label>
             <input type="text" name="nome" placeholder="Nome do Produto" required>
+            <label for="fabricante">Fabricante:</label>
             <input type="text" name="fabricante" placeholder="Fabricante" required>
+            <label for="dt_validade">Data de vencimento:</label>
             <input type="date" name="dt_validade" required>
+            <label for="qntd_estoque">Quantidade:</label>
             <input type="number" name="qntd_estoque" placeholder="Quantidade em Estoque" required>
+            <label for="valor">Valor:</label>
             <input type="number" name="valor" placeholder="Valor" required>
+            <label for="secao">Seção:</label>
             <select name="secao" required>
                 <option value="Medicamentos">Medicamentos</option>
                 <option value="Cuidados pessoais">Cuidados pessoais</option>
@@ -83,6 +89,7 @@
                 <option value="Vitaminas">Vitaminas e Suplementos</option>
                 <option value="Dermocosméticos">Dermocosméticos</option>
             </select>
+            <label for="descricao">Descrição:</label>
             <input type="text" name="descricao" placeholder="Descrição" required>
             <button type="submit">Adicionar Produto</button>
         </form>
@@ -102,7 +109,7 @@
                 <td>{{ produto.ID_PROD }}</td>
                 <td>{{ produto.NOME_PROD }}</td>
                 <td>{{ produto.SECAO }}</td>
-                <td>{{ "%.2f"|format(produto.VALOR) }} </td>
+                <td>{{ "R$""%.2f"|format(produto.VALOR) }} </td>
                 <td>{{ produto.DESCRICAO }}</td>
                 <td>
                    
@@ -119,17 +126,25 @@
 
         <h2>Adicionar Novo Cliente</h2>
         <form action="/adicionar_cliente" method="post">
+            <label for="nome">Nome:</label>
             <input type="text" name="nome" placeholder="Nome do Cliente" required>
+            <label for="telefone">Telefone:</label>
             <input type="text" name="telefone" placeholder="Telefone" required>
+            <label for="email">E-mail:</label>
             <input type="email" name="email" placeholder="Email" required>
+            <label for="genero">Gênero:</label>
             <select name="genero" required>
                 <option value="Masculino">Masculino</option>
                 <option value="Feminino">Feminino</option>
                 <option value="Outro">Outro</option>
             </select>
+            <label for="cpf">CPF:</label>
             <input type="text" name="cpf" placeholder="CPF" required>
+            <label for="idade">Idade:</label>
             <input type="number" name="idade" placeholder="Idade" required>
+            <label for="cep">CEP:</label>
             <input type="text" name="cep" placeholder="CEP" required>
+            <label for="endereco">Endereço:</label>
             <input type="text" name="endereco" placeholder="Endereço" required>
             <button type="submit">Adicionar Cliente</button>
         </form>
